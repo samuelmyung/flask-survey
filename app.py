@@ -22,6 +22,20 @@ def change_page():
 @app.get("/questions/<int:index>")
 def render_question_page(index):
 
+    if index >= len(survey.questions):
+        return redirect("/thank_you")
+
     question = survey.questions[index]
-    return render_question_page("question.html",
+    return render_template("question.html",
                                 question = question)
+
+@app.post("/answer")
+def handle_answer():
+    RESPONSES.append(request.form['answer'])
+    next_question_index = len(RESPONSES)
+
+    return redirect(f"/questions/{next_question_index}")
+
+@app.get("/thank_you")
+def render_thank_you():
+    return render_template("completion.html", responses=RESPONSES, questions = survey.questions)
